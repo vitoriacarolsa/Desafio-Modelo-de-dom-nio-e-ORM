@@ -2,10 +2,7 @@ package com.devsuperior.modelodominio.entities;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name="tb_atividade")
@@ -21,12 +18,14 @@ public class Atividade {
     private String descricao;
     private Double preco;
 
-    @OneToMany(mappedBy = "atividades")
-    private List<Bloco> blocos = new ArrayList<>();
-
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
+    @OneToMany(mappedBy = "atividades")
+    private List<Bloco> blocos = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "atividades")
+    private Set<Participante> participantes=new HashSet<>();
 
     public Atividade (){
     }
@@ -38,8 +37,17 @@ public class Atividade {
         this.preco = preco;
         this.categoria = categoria;
     }
-    @ManyToMany(mappedBy = "atividades")
-    private Set<Participante> participantes=new HashSet<>();
+
+    public Atividade(Integer id, String name, String descricao, Double preco, Categoria categoria, List<Bloco> blocos, Set<Participante> participantes) {
+        this.id = id;
+        this.name = name;
+        this.descricao = descricao;
+        this.preco = preco;
+        this.categoria = categoria;
+        this.blocos = blocos;
+        this.participantes = participantes;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -86,5 +94,28 @@ public class Atividade {
 
     public List<Bloco> getBlocos() {
         return blocos;
+    }
+
+    public void setBlocos(List<Bloco> blocos) {
+        this.blocos = blocos;
+    }
+
+    public void setParticipantes(Set<Participante> participantes) {
+        this.participantes = participantes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Atividade atividade = (Atividade) o;
+
+        return Objects.equals(id, atividade.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }
